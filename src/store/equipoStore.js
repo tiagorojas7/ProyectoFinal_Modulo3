@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useEquipoStore = create((set) => ({
+export const useEquipoStore = create((set, get) => ({
 //Estado inicial
   equipo: [],
 
@@ -29,14 +29,10 @@ export const useEquipoStore = create((set) => ({
   vaciarFavoritos:()=> set({ equipo: [] }),
 
   //Buscamos un equipo en la lista de favoritos
-  buscarFavorito: (equipoId) => set((state) => {
-    const equipoEncontrado = state.equipo.find((equipo) => equipo.id === equipoId);
-    return { equipo: equipoEncontrado ? [equipoEncontrado] : [] };
-  }),
+  //(solo lee: devuelve el equipo o undefined, sin modificar la lista)
+  buscarFavorito: (equipoId) => get().equipo.find((equipo) => equipo.id === equipoId),
 
   //Obtenemos la lista de favoritos
-  obtenerFavoritos: () => set((state) => {
-    return { equipo: state.equipo };
-  }),
+  obtenerFavoritos: () => get().equipo,
 }));
  

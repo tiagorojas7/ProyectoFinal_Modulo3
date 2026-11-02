@@ -1,43 +1,41 @@
-import { useFetch } from "../hooks/useFetch";
-import { useEquipoStore } from "../store/equipoStore.js";
+import { Avatar, Link as MuiLink, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useFetch } from "../hooks/useFetch";
 
 const API = "/api-futbol/competitions";
 
 export const ListadoCompetencias = () => {
-    const { data: competencias, loading, error } = useFetch(API);
-    const verFavoritos = useEquipoStore((state) => state.verFavoritos);
-    const agregarFavorito = useEquipoStore((state) => state.agregarFavorito);
-    
- if(loading) return <p>Cargando...</p>;
- if(error) return <p>Error: {error.message}</p>;
+  const { data: competencias, loading, error } = useFetch(API);
+
+  if (loading) return <Typography>Cargando...</Typography>;
+  if (error) return <Typography color="error">Error: {error.message}</Typography>;
 
   const competenciasConImagen = competencias?.competitions?.filter(
     (competencia) => Boolean(competencia.emblemUrl)
   ) ?? [];
 
-  if (competenciasConImagen.length === 0 && !loading && !error) {
-    return <p>No hay competencias con imagen disponible.</p>;
+  if (competenciasConImagen.length === 0) {
+    return <Typography>No hay competencias con imagen disponible.</Typography>;
   }
 
   return (
-    <div>
-      <h1>Todas las competencias</h1>
-      <ul>
+    <>
+      <Typography variant="h4" component="h1">
+        Todas las competencias
+      </Typography>
+      <List>
         {competenciasConImagen.map((competencia) => (
-          <li key={competencia.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <img
-              src={competencia.emblemUrl}
-              alt={competencia.name}
-              style={{ width: '40px', height: '40px', objectFit: 'contain' }}
-            />
-            <span>{competencia.name}</span>
-            <Link to={`/posiciones/${competencia.id}`}>Ver estadísticas</Link>
-            <button onClick={() => agregarFavorito({id: competencia.id, nombre: competencia.name})}>Agregar a Favoritos</button>
-          </li>
+          <ListItem key={competencia.id} divider>
+            <ListItemAvatar>
+              <Avatar src={competencia.emblemUrl} alt={competencia.name} variant="square" />
+            </ListItemAvatar>
+            <ListItemText primary={competencia.name} />
+            <MuiLink component={Link} to={`/posiciones/${competencia.id}`}>
+              Ver estadísticas
+            </MuiLink>
+          </ListItem>
         ))}
-      </ul>
-      <Link to="/favoritos">Ver competencias favoritas</Link>
-    </div>
+      </List>
+    </>
   );
 };
