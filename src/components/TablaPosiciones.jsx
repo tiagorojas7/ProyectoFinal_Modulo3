@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Avatar, Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 
 // Recibe las filas de la tabla (standings[0].table de la API) y avisa qué equipo se eligió
 export const TablaPosiciones = ({ tabla = [], onEquipoClick }) => {
@@ -24,7 +24,17 @@ export const TablaPosiciones = ({ tabla = [], onEquipoClick }) => {
             sx={{ cursor: "pointer" }}
           >
             <TableCell>{fila.position}</TableCell>
-            <TableCell>{fila.team.name}</TableCell>
+            <TableCell>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Avatar
+                  src={fila.team.crestURI}
+                  alt={fila.team.name}
+                  variant="square"
+                  sx={{ width: 24, height: 24, bgcolor: "transparent" }}
+                />
+                {fila.team.name}
+              </Box>
+            </TableCell>
             <TableCell align="right">{fila.playedGames}</TableCell>
             <TableCell align="right">{fila.won}</TableCell>
             <TableCell align="right">{fila.draw}</TableCell>

@@ -1,5 +1,23 @@
 import { useEffect, useState } from "react";
 
+// Guardamos los pedidos ya hechos para no repetirlos (el plan gratuito de la API permite 10 por minuto)
+const cache = new Map();
+
+const pedir = (url) => {
+  if (!cache.has(url)) {
+    const pedido = fetch(url).then((response) => {
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    });
+    cache.set(url, pedido);
+    // Si falla, lo sacamos del cache para poder reintentar
+    pedido.catch(() => cache.delete(url));
+  }
+  return cache.get(url);
+};
+
 export const useFetch = (url) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,13 +28,8 @@ export const useFetch = (url) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        const json = await response.json();
+        const json = await pedir(url);
         setData(json);
-        setLoading(false);
       } catch (error) {
         setError(error);
       } finally {

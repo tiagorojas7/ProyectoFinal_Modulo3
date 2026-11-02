@@ -1,11 +1,12 @@
 import { Box, Button, Chip, Container, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { ListadoCompetencias } from "../components/ListadoCompetencias";
 import { useEquipoStore } from "../store/equipoStore";
 
 // Página 1: todas las competencias + equipos favoritos guardados en el store
 export const CompetenciasPage = () => {
+  const navigate = useNavigate();
   const favoritos = useEquipoStore((state) => state.obtenerFavoritos());
   const eliminarFavorito = useEquipoStore((state) => state.eliminarFavorito);
   const vaciarFavoritos = useEquipoStore((state) => state.vaciarFavoritos);
@@ -24,9 +25,7 @@ export const CompetenciasPage = () => {
                 <Chip
                   key={favorito.id}
                   label={favorito.nombre}
-                  component={Link}
-                  to={`/equipo/${favorito.id}`}
-                  clickable
+                  onClick={() => navigate(`/equipo/${favorito.id}`)}
                   onDelete={() => eliminarFavorito(favorito)}
                 />
               ))}

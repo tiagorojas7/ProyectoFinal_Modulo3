@@ -18,6 +18,11 @@ export const LigaPage = () => {
   const cargando = posiciones.loading || partidos.loading;
   const error = posiciones.error || partidos.error;
 
+  // La API envuelve cada partido en { match } y los manda del más nuevo al más viejo
+  const todos = (partidos.data.matches ?? []).map((item) => item.match);
+  const proximos = todos.reverse().slice(0, 10);
+  const tabla = posiciones.data.standings?.[0]?.table ?? [];
+
   return (
     <>
       <Header />
@@ -28,17 +33,21 @@ export const LigaPage = () => {
         {!cargando && !error && (
           <>
             <Typography variant="h4" component="h1" gutterBottom>
-              {posiciones.data.competition?.name}
+              {todos[0]?.competition.name ?? "Posiciones"}
             </Typography>
 
-            <TablaPosiciones
-              tabla={posiciones.data.standings?.[0]?.table}
-              onEquipoClick={(equipoId) => navigate(`/equipo/${equipoId}`)}
-            />
+            {tabla.length === 0 ? (
+              <Typography>No hay posiciones disponibles para esta competición.</Typography>
+            ) : (
+              <TablaPosiciones
+                tabla={tabla}
+                onEquipoClick={(equipoId) => navigate(`/equipo/${equipoId}`)}
+              />
+            )}
 
             <ListaPartidos
               titulo="Próximos partidos"
-              partidos={partidos.data.matches?.slice(0, 10)}
+              partidos={proximos}
             />
           </>
         )}
